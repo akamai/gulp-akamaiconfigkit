@@ -1,0 +1,29 @@
+{
+  "name": "gulp-akamaiweb",
+  "version": "0.0.1",
+  "keywords": [
+    "gulpplugin",
+    "akamai",
+    "web",
+    "activate"
+  ],
+  "description": "A gulp plugin for to interface common activities related to Akamai Web products",
+  "repository": "ssh://git@stash.akamai.com:7999/~colinb/gulp-akamaiweb.git",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Colin Bendell",
+    "email": "colinb@akamai.com",
+    "url": "https://github.com/colinbendell"
+  },
+  "main": "./src/index.js",
+  "scripts": {
+//    "test": "istanbul test _mocha --report html -- test/*.js --reporter spec",
+//    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+  },
+  "dependencies": {
+    "through2": "^2.0.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
+}
