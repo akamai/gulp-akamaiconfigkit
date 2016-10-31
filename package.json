@@ -17,7 +17,8 @@
   },
   "main": "./src/index.js",
   "dependencies": {
-    "through2": "^2.0.1"
+    "through2": "^2.0.1",
+    "akamaiweb-kit": "git+ssh://git@stash.akamai.com:7999/~colinb/akamaiweb-kit.git"
   },
   "devDependencies": {
     "gulp": "^3.9.1"
