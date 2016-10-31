@@ -1,8 +1,7 @@
 let through = require('through2');
 let gutil = require('gulp-util');
 let PluginError = gutil.PluginError;
-let akamaiweb = require('akamaiweb-kit/website');
-
+let akamaiweb = require('akamaiweb-kit/src/website');
 // consts
 const PLUGIN_NAME = 'gulp-akamaiweb';
 
@@ -12,7 +11,7 @@ class AkamaiWeb {
         this._akamaiweb = new akamaiweb.WebSite(config);
     }
 
-    deployStaging(hostname, emailNotifications) {
+    deployStaging(config = {host: 'www.example.com', emailNotifications: ['admin@example.com']}) {
 
         const activationNote = 'GULP Automatic update to STAGING';
         // Creating a stream through which each file will pass
@@ -22,40 +21,40 @@ class AkamaiWeb {
 
             if (file.isStream()) {
                 // file.contents is a Stream - https://nodejs.org/api/stream.html
-                this.emit('error', new PluginError(PLUGIN_NAME, 'Streams not supported!'));
+                throw new PluginError(PLUGIN_NAME, 'Streams not supported!');
                 //TODO:
             }
             else if (file.isBuffer()) {
-                this._akamaiweb.update(hostname, file.contents)
+                this._akamaiweb.updateFromFile(config.host, file.path)
                     .then(data => {
-                        newVersion = data.propertyVersion;
-                        return property.activate(hostname, newVersion, this._website.AKAMAI_ENV.STAGING, activationNote, emailNotifications);
+                        let newVersion = data.propertyVersion;
+                        return this._akamaiweb.activate(config.host, newVersion, akamaiweb.AKAMAI_ENV.STAGING, activationNote, config.emailNotifications);
                     })
-                    .then(data => {
-                        callback(null, file);
-                    })
+                    .then(data => callback(null, file))
                     .catch(error => {
-                        this.emit('error', new PluginError(PLUGIN_NAME, error.body ? error.body : error));
+                        callback(error, error.body);
+                        throw new PluginError(PLUGIN_NAME, error.body ? error.body : error, error);
                     });
             }
         });
 
     }
-    promoteStagingToProduction(hostname, emailNotifications) {
+    promoteStagingToProduction(config = {host: 'www.example.com', emailNotifications: ['admin@example.com']}) {
         const activationNote = 'GULP Automatic update to PRODUCTION';
         // Creating a stream through which each file will pass
         return through.obj((file, encoding, callback) => {
-            this._akamaiweb.promoteStagingToProd(hostname, activationNote, emailNotifications)
+            this._akamaiweb.promoteStagingToProd(config.host, activationNote, config.emailNotifications)
                 .then(data => {
                     callback(null, file);
                 })
                 .catch(error => {
-                    this.emit('error', new PluginError(PLUGIN_NAME, error.body ? error.body : error));
+                    callback(error, error.body);
+                    throw new PluginError(PLUGIN_NAME, error.body ? error.body : error, error);
                 });
         });
     }
 
-    testStaging(hostname, urls) {
+    testStaging(config) {
         return through.obj((file, encoding, callback) => {
             callback(null, file);
         });
