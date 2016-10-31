@@ -1,40 +1,65 @@
 let through = require('through2');
 let gutil = require('gulp-util');
 let PluginError = gutil.PluginError;
+let akamaiweb = require('akamaiweb-kit/website');
 
 // consts
 const PLUGIN_NAME = 'gulp-akamaiweb';
 
 
 class AkamaiWeb {
-    constructor() {
-
+    constructor(config = {path:"~/.edgerc", section: "default"}) {
+        this._akamaiweb = new akamaiweb.WebSite(config);
     }
 
-    function sample() {
-        return through.obj(function(file, encoding, callback) {
-            if (file.isNull()) {
-                // nothing to do
-                return callback(null, file);
-            }
+    deployStaging(hostname, emailNotifications) {
+
+        const activationNote = 'GULP Automatic update to STAGING';
+        // Creating a stream through which each file will pass
+        return through.obj((file, encoding, callback) => {
+
+            if (file.isNull()) return callback(null, file);
 
             if (file.isStream()) {
                 // file.contents is a Stream - https://nodejs.org/api/stream.html
                 this.emit('error', new PluginError(PLUGIN_NAME, 'Streams not supported!'));
-
-                // or, if you can handle Streams:
-                //file.contents = file.contents.pipe(...
-                //return callback(null, file);
-            } else if (file.isBuffer()) {
-                // file.contents is a Buffer - https://nodejs.org/api/buffer.html
-                this.emit('error', new PluginError(PLUGIN_NAME, 'Buffers not supported!'));
-
-                // or, if you can handle Buffers:
-                //file.contents = ...
-                //return callback(null, file);
+                //TODO:
+            }
+            else if (file.isBuffer()) {
+                this._akamaiweb.update(hostname, file.contents)
+                    .then(data => {
+                        newVersion = data.propertyVersion;
+                        return property.activate(hostname, newVersion, this._website.AKAMAI_ENV.STAGING, activationNote, emailNotifications);
+                    })
+                    .then(data => {
+                        callback(null, file);
+                    })
+                    .catch(error => {
+                        this.emit('error', new PluginError(PLUGIN_NAME, error.body ? error.body : error));
+                    });
             }
         });
-    };
+
+    }
+    promoteStagingToProduction(hostname, emailNotifications) {
+        const activationNote = 'GULP Automatic update to PRODUCTION';
+        // Creating a stream through which each file will pass
+        return through.obj((file, encoding, callback) => {
+            this._akamaiweb.promoteStagingToProd(hostname, activationNote, emailNotifications)
+                .then(data => {
+                    callback(null, file);
+                })
+                .catch(error => {
+                    this.emit('error', new PluginError(PLUGIN_NAME, error.body ? error.body : error));
+                });
+        });
+    }
+
+    testStaging(hostname, urls) {
+        return through.obj((file, encoding, callback) => {
+            callback(null, file);
+        });
+    }
 }
 
-module.exports =
+module.exports = AkamaiWeb;
