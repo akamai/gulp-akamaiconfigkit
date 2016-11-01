@@ -1,14 +1,14 @@
 let through = require('through2');
 let gutil = require('gulp-util');
 let PluginError = gutil.PluginError;
-let akamaiweb = require('akamaiweb-kit/src/website');
+let WebSite = require('WebSite-kit').WebSite;
 // consts
-const PLUGIN_NAME = 'gulp-akamaiweb';
+const PLUGIN_NAME = 'gulp-WebSite';
 
 
 class AkamaiWeb {
     constructor(config = {path:"~/.edgerc", section: "default"}) {
-        this._akamaiweb = new akamaiweb.WebSite(config);
+        this._akamaiweb = new WebSite(config);
     }
 
     deployStaging(config = {host: 'www.example.com', emailNotifications: ['admin@example.com']}) {
@@ -28,7 +28,7 @@ class AkamaiWeb {
                 this._akamaiweb.updateFromFile(config.host, file.path)
                     .then(data => {
                         let newVersion = data.propertyVersion;
-                        return this._akamaiweb.activate(config.host, newVersion, akamaiweb.AKAMAI_ENV.STAGING, activationNote, config.emailNotifications);
+                        return this._akamaiweb.activate(config.host, newVersion, WebSite.AKAMAI_ENV.STAGING, activationNote, config.emailNotifications);
                     })
                     .then(data => callback(null, file))
                     .catch(error => {

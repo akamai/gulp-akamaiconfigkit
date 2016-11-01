@@ -15,7 +15,7 @@
     "email": "colinb@akamai.com",
     "url": "https://github.com/colinbendell"
   },
-  "main": "./src/index.js",
+  "main": "./index.js",
   "dependencies": {
     "through2": "^2.0.1",
     "akamaiweb-kit": "git+ssh://git@stash.akamai.com:7999/~colinb/akamaiweb-kit.git"
