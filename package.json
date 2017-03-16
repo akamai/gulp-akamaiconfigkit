@@ -1,5 +1,5 @@
 {
-  "name": "gulp-akamaiweb",
+  "name": "gulp-akamaiconfigkit",
   "version": "0.0.1",
   "keywords": [
     "gulpplugin",
@@ -8,7 +8,7 @@
     "activate"
   ],
   "description": "A gulp plugin for to interface common activities related to Akamai Web products",
-  "repository": "git+ssh://git@stash.akamai.com:7999/~colinb/gulp-akamaiweb.git",
+  "repository": "https://github.com/akamai-open/gulp-akamaiconfigkit.git",
   "license": "Apache-2.0",
   "author": {
     "name": "Colin Bendell",
@@ -18,7 +18,7 @@
   "main": "./index.js",
   "dependencies": {
     "through2": "^2.0.1",
-    "akamaiweb-kit": "git+ssh://git@stash.akamai.com:7999/~colinb/akamaiweb-kit.git"
+    "akamaiconfigkit": ">=0.0.1"
   },
   "devDependencies": {
     "gulp": "^3.9.1"
