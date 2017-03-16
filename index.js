@@ -15,14 +15,14 @@
 let through = require('through2');
 let gutil = require('gulp-util');
 let PluginError = gutil.PluginError;
-let WebSite = require('WebSite-kit').WebSite;
+let WebSite = require('AkamaiConfig-kit').WebSite;
 // consts
 const PLUGIN_NAME = 'gulp-WebSite';
 
 
 class AkamaiWeb {
     constructor(config = {path:"~/.edgerc", section: "default"}) {
-        this._akamaiweb = new WebSite(config);
+        this._akamaiconfigkit = new WebSite(config);
     }
 
     deployStaging(config = {host: 'www.example.com', emailNotifications: ['admin@example.com']}) {
@@ -39,10 +39,10 @@ class AkamaiWeb {
                 //TODO:
             }
             else if (file.isBuffer()) {
-                this._akamaiweb.updateFromFile(config.host, file.path)
+                this._akamaiconfigkit.updateFromFile(config.host, file.path)
                     .then(data => {
                         let newVersion = data.propertyVersion;
-                        return this._akamaiweb.activate(config.host, newVersion, WebSite.AKAMAI_ENV.STAGING, activationNote, config.emailNotifications);
+                        return this._akamaiconfigkit.activate(config.host, newVersion, WebSite.AKAMAI_ENV.STAGING, activationNote, config.emailNotifications);
                     })
                     .then(data => callback(null, file))
                     .catch(error => {
@@ -57,7 +57,7 @@ class AkamaiWeb {
         const activationNote = 'GULP Automatic update to PRODUCTION';
         // Creating a stream through which each file will pass
         return through.obj((file, encoding, callback) => {
-            this._akamaiweb.promoteStagingToProd(config.host, activationNote, config.emailNotifications)
+            this._akamaiconfigkit.promoteStagingToProd(config.host, activationNote, config.emailNotifications)
                 .then(data => {
                     callback(null, file);
                 })
